@@ -18,21 +18,23 @@ from config import *
 logging = initLog('submission.log', __name__)
 
 def send_email(msg):
-    message = MIMEText(f'New status for {URL}: \n{msg}', 'plain', 'utf-8')
-    message['From'] = Header("Status Monitoring Kit", 'utf-8')
-    message['To'] =  Header("userName", 'utf-8')
+    message = MIMEText(f'New status for {URL} \n\n{msg}', 'plain', 'utf-8')
+    message['From'] = f"NewStatus <{SENDER_EMAIL}>"
+    message['To'] =  ", ".join(RECEIVERS)
     subject = URL.split('/')[-1].upper()
-    message['Subject'] = Header(f'{subject} Manuscript Status: {msg}', 'utf-8')
+    message['Subject'] = f'{subject} Manuscript Status: {msg}'
     try:
         smtpObj = smtplib.SMTP() 
-        smtpObj.connect(SENDER_SERVER, 587)    # 587 为 SMTP 端口号，
+        smtpObj.connect(SENDER_SERVER, SMTP_PORT)
         smtpObj.login(SENDER_EMAIL, SENDER_PWD)  
         smtpObj.sendmail(SENDER_EMAIL, RECEIVERS, message.as_string())
         print("Sent email successfully")
         logging.info("Sent email successfully")
-    except smtplib.SMTPException:
+    except smtplib.SMTPException as e:
         print("Error: unable to send email")
+        print(repr(e))
         logging.error("Error: unable to send email")
+
 
 def get_random_interval():
     '''

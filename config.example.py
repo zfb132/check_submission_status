@@ -4,6 +4,7 @@
 # time: 2023-08-04 11:19
 
 # 谷歌浏览器驱动的路径
+# r"D:/Applications/chromedriver.exe"
 DRIVER_PATH = "/usr/bin/chromedriver"
 
 # 投稿网址
@@ -17,6 +18,8 @@ PWD = "AaBb@123456"
 SENDER_EMAIL = "example@qq.com"
 # 发送邮件的服务器
 SENDER_SERVER = "smtp.qq.com"
+# 发送邮件的端口
+SMTP_PORT = 587
 # 发送邮件的邮箱密码
 SENDER_PWD = "123456&BbAa"
 
