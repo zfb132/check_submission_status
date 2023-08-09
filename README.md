@@ -29,3 +29,55 @@ pip install bs4 splinter selenium lxml
 ```bash
 python3 main.py
 ```
+
+## 7. 使用crontab定时运行
+```bash
+crontab -e
+# 添加如下内容：表示每天本地时间8点运行一次
+0 8 * * * bash -c "cd /abs_path/to/this/project && python3 main.py"
+```
+
+## 使用service timer定时运行
+创建`/etc/systemd/system/check_submission_status.service`文件，添加如下内容  
+```conf
+[Unit]
+Description=Check Submission Status service
+After=network.target
+Wants=check_submission_status.timer
+
+[Service]
+Type=oneshot
+User=your_username
+WorkingDirectory=/abs_path/to/this/project
+ExecStart=/usr/bin/python3 main.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+创建`/etc/systemd/system/check_submission_status.timer`文件，添加如下内容  
+```conf
+[Unit]
+Description=Check Submission Status timer
+Requires=check_submission_status.service
+
+[Timer]
+Unit=check_submission_status.service
+# AccuracySec = 1us
+RandomizedDelaySec = 1h
+# 每天UTC时间1点和12点运行一次
+OnCalendar=*-*-* 01,12:00:00 UTC
+Persistent=yes
+
+[Install]
+WantedBy=timers.target
+```
+启动定时器
+```bash
+systemctl daemon-reload
+systemctl enable check_submission_status.timer
+systemctl start check_submission_status.timer
+
+# 查看系统所有的定时器状态
+systemctl list-timers --no-pager
+```
